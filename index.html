@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+	<head>
+		<title>NoDZF Tube</title>
+		<link href="./css/style.css" rel="stylesheet" type="text/css">
+		<link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
+	</head>
+	
+	<body>
+		<div id="container">
+			<a class="nulled" href="index.php"><h1>NoDZF <span class="tube_back">Tube</span></h1></a>
+			<div id="up_form">
+		 		<form name="up_form" action="/index.html" method="post" enctype="multipart/form-data">
+		 		 <h4>Titolo: </h4>
+		  		 <span class="title_input">
+		  		 <input type="text" id="title" name="title" value="" required="true" />
+		  		 </span>
+		  	     <h4>Descrizione:</h4>
+		  	     <textarea name="description" id="description" cols="50" rows="10" required></textarea>
+		         <br><br>
+		         <a href="#" id="browseButton">Select a video file</a>
+		         <br><br>
+		         <input type="button" value="Send video" class="input button" onclick="upload()" />
+		        </form>
+		       <h4 id="uploadStatus"></h4>
+		    </div>
+		    <div id="credits">
+				<p>Forum: <a href="http://nodownloadzoneforum.net/" target="_blank">NoDownloadZoneForum</a></p>
+				<p>YouTube Channel: <a href="http://www.youtube.com/user/NoDownloadzone" target="_blank">NoDownloadzone YouTube</a></p>
+		    </div>
+		</div>
+
+		<script src="resumable.js"></script>
+		<script>
+			var r = new Resumable({
+  				target:'upload.php',
+  				query: {title: 'default_title', description: 'default_description'}
+			});
+  			
+			r.assignBrowse(document.getElementById('browseButton'));
+			
+			function upload() {
+				r.opts.query.title = document.getElementById("title").value;
+				r.opts.query.description = document.getElementById("description").value;
+				r.upload();
+			}
+			
+			r.on('fileAdded', function(file, event){
+    			document.getElementById("uploadStatus").innerHTML = file.fileName;
+  			});
+			r.on('complete', function(){
+    			document.getElementById("uploadStatus").innerHTML = "Upload completed!";
+			});
+			r.on('progress', function(){
+				if(r.progress() != 0)
+    				document.getElementById("uploadStatus").innerHTML = "Uploading " + parseInt(r.progress() * 100) + "%";
+  			});
+			r.on('error', function(message, file){
+    			document.getElementById("uploadStatus").innerHTML = "Upload error!";
+  			});
+			r.on('pause', function(){
+    			document.getElementById("uploadStatus").innerHTML = "Upload paused!";
+  			});
+			r.on('cancel', function(){
+    			document.getElementById("uploadStatus").innerHTML = "Upload stopped!";
+  			});
+		</script>
+	</body>
+</html>
+
+<!--
+ @author over_coder <over.coder@yahoo.it>
+ Twitter: @over_coder
+ Thanks to @jayendrap
+ http://stackoverflow.com/questions/14236502/upload-video-to-youtube-using-youtube-api-v3-and-php
+-->
