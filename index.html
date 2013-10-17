@@ -38,15 +38,26 @@
 			});
   			
 			r.assignBrowse(document.getElementById('browseButton'));
+			var allowed = true;
 			
 			function upload() {
 				r.opts.query.title = document.getElementById("title").value;
 				r.opts.query.description = document.getElementById("description").value;
-				r.upload();
+				if(allowed)
+					r.upload();
 			}
 			
 			r.on('fileAdded', function(file, event){
-    			document.getElementById("uploadStatus").innerHTML = file.fileName;
+				var low_name = file.fileName.toLowerCase()
+				var ext = low_name.substring(low_name.lastIndexOf('.'), low_name.length);
+				var allowed_ext = new Array('.mp4','.avi', '.mov', '.mpeg', '.mkv');
+
+				if(inArray(ext, allowed_ext))
+    				document.getElementById("uploadStatus").innerHTML = file.fileName;
+    			else {
+    				document.getElementById("uploadStatus").innerHTML = 'You can upload only files with .mp4, .avi, .mov,.mpeg, .mkv extension';
+    				allowed = false;
+    			}
   			});
 			r.on('complete', function(){
     			document.getElementById("uploadStatus").innerHTML = "Upload completed!";
@@ -64,6 +75,15 @@
 			r.on('cancel', function(){
     			document.getElementById("uploadStatus").innerHTML = "Upload stopped!";
   			});
+
+			// jQuery's implementation 
+  			function inArray(needle, haystack) {
+    			var length = haystack.length;
+    			for(var i = 0; i < length; i++) {
+        			if(haystack[i] == needle) return true;
+    			}
+    			return false;
+			}
 		</script>
 	</body>
 </html>
