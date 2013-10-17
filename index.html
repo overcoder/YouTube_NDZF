@@ -38,24 +38,26 @@
 			});
   			
 			r.assignBrowse(document.getElementById('browseButton'));
-			var allowed = true;
+			var allowed = false;
 			
 			function upload() {
 				r.opts.query.title = document.getElementById("title").value;
 				r.opts.query.description = document.getElementById("description").value;
-				if(allowed)
+				if(allowed == true)
 					r.upload();
 			}
 			
 			r.on('fileAdded', function(file, event){
-				var low_name = file.fileName.toLowerCase()
+				var low_name = file.fileName.toLowerCase();
 				var ext = low_name.substring(low_name.lastIndexOf('.'), low_name.length);
-				var allowed_ext = new Array('.mp4','.avi', '.mov', '.mpeg', '.mkv');
+				var allowed_ext = new Array('.mp4','.avi', '.mov', '.mpeg', '.mkv', '.wmv');
 
-				if(inArray(ext, allowed_ext))
+				if(inArray(ext, allowed_ext)) {
     				document.getElementById("uploadStatus").innerHTML = file.fileName;
+    				allowed = true;
+    			}
     			else {
-    				document.getElementById("uploadStatus").innerHTML = 'You can upload only files with .mp4, .avi, .mov,.mpeg, .mkv extension';
+    				document.getElementById("uploadStatus").innerHTML = 'You can upload only files with .mp4, .avi, .mov, .mpeg, .mkv and .wmv extension';
     				allowed = false;
     			}
   			});
