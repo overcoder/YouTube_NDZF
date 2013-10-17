@@ -27,6 +27,7 @@ require_once './db.php';
 require_once './functions.php';
 	
 define("UPLOAD_DIR", "uploads/");
+global $allowed_ext = array('.mp4','.avi', '.mov', '.mpeg', '.mkv');
 	
 /**
  *
@@ -104,7 +105,7 @@ function createFileFromChunks($temp_dir, $fileName, $chunkSize, $totalSize) {
 
 			$r = rename(UPLOAD_DIR.$fileName, UPLOAD_DIR.$prefix.$fileName);
             
-            if(in_array(getExtension(UPLOAD_DIR.$prefix.$filename), array('.mp4','.avi', '.mov', '.mpeg', '.mkv')))
+            if(in_array(getExtension(UPLOAD_DIR.$prefix.$filename), $allowed_ext))
                 db_upload($fileName, $prefix);
             else
                 unlink(UPLOAD_DIR.$prefix.$fileName);  // Delete possibile dangerous files like .sh, .php, etc
@@ -147,7 +148,7 @@ function db_upload($filename, $prefix) {
 	
 	$ext = getExtension(UPLOAD_DIR.$prefix.$filename);
 	
-	if(in_array($ext, array('.mp4','.avi', '.mov', '.mpeg', '.mkv'))) {
+	if(in_array($ext, $allowed_ext)) {
 
 		$query = "INSERT INTO videos VALUES (
 			NULL, 
