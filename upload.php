@@ -104,7 +104,7 @@ function createFileFromChunks($temp_dir, $fileName, $chunkSize, $totalSize) {
 
 			$r = rename(UPLOAD_DIR.$fileName, UPLOAD_DIR.$prefix.$fileName);
 			
-			call_me($fileName, $prefix);
+			db_upload($fileName, $prefix);
 			
         } else {
             _log('cannot create the destination file');
@@ -122,7 +122,7 @@ function createFileFromChunks($temp_dir, $fileName, $chunkSize, $totalSize) {
 	
 }
 
-function call_me($filename, $prefix) {
+function db_upload($filename, $prefix) {
 	
 	$db = new Database();
 	
@@ -162,6 +162,7 @@ function call_me($filename, $prefix) {
 		$db->query($query);
 	}
 	else {
+		unlink(UPLOAD_DIR.$prefix.$filename);
 		_log('file extension error - '.$ext);
 	}
 	
