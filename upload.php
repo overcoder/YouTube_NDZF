@@ -14,8 +14,6 @@
  *
  * @author Gregory Chris (http://online-php.com)
  * @email www.online.php@gmail.com
- *
- * Edited by over_coder
  */
 
 
@@ -27,7 +25,8 @@ require_once './db.php';
 require_once './functions.php';
 	
 define("UPLOAD_DIR", "uploads/");
-global $allowed_ext = array('.mp4','.avi', '.mov', '.mpeg', '.mkv');
+
+$allowed_ext = array('.mp4','.avi', '.mov', '.mpeg', '.mkv', '.wmv');
 	
 /**
  *
@@ -104,13 +103,8 @@ function createFileFromChunks($temp_dir, $fileName, $chunkSize, $totalSize) {
             fclose($fp);
 
 			$r = rename(UPLOAD_DIR.$fileName, UPLOAD_DIR.$prefix.$fileName);
-            
-            if(in_array(getExtension(UPLOAD_DIR.$prefix.$filename), $allowed_ext))
-                db_upload($fileName, $prefix);
-            else
-                unlink(UPLOAD_DIR.$prefix.$fileName);  // Delete possibile dangerous files like .sh, .php, etc
 			
-			
+			call_me($fileName, $prefix);
 			
         } else {
             _log('cannot create the destination file');
@@ -128,7 +122,7 @@ function createFileFromChunks($temp_dir, $fileName, $chunkSize, $totalSize) {
 	
 }
 
-function db_upload($filename, $prefix) {
+function call_me($filename, $prefix) {
 	
 	$db = new Database();
 	
@@ -147,6 +141,8 @@ function db_upload($filename, $prefix) {
 	}
 	
 	$ext = getExtension(UPLOAD_DIR.$prefix.$filename);
+	
+	global $allowed_ext;
 	
 	if(in_array($ext, $allowed_ext)) {
 
