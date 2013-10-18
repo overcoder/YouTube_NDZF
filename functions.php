@@ -52,7 +52,7 @@
 	
 	function getExtension($filename = null) {
 		if(!is_null($filename))
-			return substr($filename, strpos($filename,'.'), strlen($filename)-1);
+			return strtolower(substr($filename, strpos($filename,'.'), strlen($filename)-1));
 		return false;
 	}
 ?>
