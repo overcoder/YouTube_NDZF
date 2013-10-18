@@ -185,3 +185,16 @@ select:hover {
 	margin-right: 25%;
 	margin-top: 50px;
 }
+
+#old_videos {
+	width: 100%;
+	float: left;
+	background-color: #FFE7E7;
+	padding-bottom: 20px;
+}
+
+.old_warn {
+	font-size: 15px;
+	padding-left: 5px;
+	color: #D11C1C;
+}

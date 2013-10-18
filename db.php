@@ -21,13 +21,14 @@
 			return $this->conn;
 		}
 		
-		function query($query)
+		function query($query, $sanitize = true)
 		{
-			$query = htmlspecialchars($query);
+			if($sanitize)
+				$query = htmlspecialchars($query);
 			
 			try
 			{
-				$result = mysqli_query($this->getConn(), $query) or die (log_error(mysqli_error()));
+				$result = mysqli_query($this->getConn(), $query) or die (log_error($query));
 				return $result;
 			}
 			catch(Exception $e)
@@ -71,13 +72,13 @@
 		
 		function result_array($result, $key_column = null)
 		{ 
-			for ($array = array(); $row = mysqli_fetch_assoc($this->getConn(), $result); isset($row[$key_column]) ? $array[$row[$key_column]] = $row : $array[] = $row);
+			for ($array = array(); $row = mysqli_fetch_assoc($result); isset($row[$key_column]) ? $array[$row[$key_column]] = $row : $array[] = $row);
 			return $array;
 		}
 		
 		function result_array_values($result)
 		{ 
-			for ($array = array(); $row = mysqli_fetch_row($this->getConn(), $result); isset($row[1]) ? $array[$row[1]] = $row[0] : $array[] = $row[0]);
+			for ($array = array(); $row = mysqli_fetch_row($result); isset($row[1]) ? $array[$row[1]] = $row[0] : $array[] = $row[0]);
 			return $array;
 		}
 	}
