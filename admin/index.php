@@ -8,11 +8,12 @@
 try {
 	require_once '../db.php';
 	require_once './ss_man.php';
+	require_once './config.php';
 	require_once '../functions.php';
 	require_once './google-api-php-client/src/Google_Client.php';
 	require_once './google-api-php-client/src/contrib/Google_YouTubeService.php';
 }catch(Exception $e) {
-	// Nothing
+	// Google PHP API require CURL extension enabled!
 }
 
 define("UPLOAD_DIR", "../uploads/");
