@@ -12,6 +12,7 @@ try {
 	require_once '../functions.php';
 	require_once './google-api-php-client/src/Google_Client.php';
 	require_once './google-api-php-client/src/contrib/Google_YouTubeService.php';
+	require_once './google-api-php-client/src/contrib/Google_Oauth2Service.php';
 }catch(Exception $e) {
 	// Google PHP API require CURL extension enabled!
 	echo 'Alcuni file non sono presenti o l\' estensione CURL di PHP non è attiva.';
@@ -36,6 +37,7 @@ $redirect = filter_var('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'],
 	FILTER_SANITIZE_URL);
 $client->setRedirectUri($redirect);
 $youtube = new Google_YoutubeService($client);
+$oauth2 = new Google_Oauth2Service($client);
 
 // DB was creaded successuf?
 
@@ -105,6 +107,9 @@ if($sman->isLogged()) {
 	if(isset($_GET['action']) && isset($_GET['id']) && $client->getAccessToken()) {
 		$action = $db->real_escape_string($_GET['action']);
 		$id = $db->real_escape_string($_GET['id']);
+		$user = $oauth2->userinfo->get();
+		$user['email'] = filter_var($user['email'], FILTER_SANITIZE_EMAIL);
+		$user['picture'] = filter_var($user['picture'], FILTER_VALIDATE_URL);
 		
 		// Getting video informations
 		$query = "SELECT * FROM videos WHERE id = ".$id;
@@ -198,8 +203,14 @@ if($sman->isLogged()) {
 												   		));
             				$error = false;
         				} catch(Google_ServiceException $e) {
+        					$reason = $e->getErrors();
+							$create_channel = '';
+							if($reason = 'youtubeSignupRequired'){
+             					//https://developers.google.com/youtube/v3/docs/errors#youtube.api.RequestContextError-unauthorized-youtubeSignupRequired
+             					$create_channel = '<br /><br />Occorre la registrazione di un <a href="https://www.youtube.com/create_channel">canale su youtube</a> per il tuo account';
+ 	         				}
             				$htmlBody = error_msg("Caught Google service Exception ".$e->getCode()
-                  				. " message is ".$e->getMessage());
+                  				. " message is ".$e->getMessage()) . $create_channel;
             				if(!in_array($e->getCode(), $retryErrorCodes)){
                 				break;
             				}
@@ -252,6 +263,7 @@ if($sman->isLogged()) {
 				$htmlBody = '
 					<div id="container">
 					<a class="nulled" href="index.php"><h1>NoDZF <span class="tube_back">Tube</span></h1></a>
+					<h1 style="float:right"> <a href="'.$user['link'].'"><img src="'. $user['picture'] .'?sz=30">'. $user['given_name'] .'</a> - '. $user['locale'] .'</h1>
 					<div id="up_form">
 					<form name="send_form" action="' . $_SERVER['PHP_SELF'] . '?action=send&id=' . $id . '" method="post">
 					 <h4>Title</h4><p>'. $video['title'] .'</p>
@@ -325,6 +337,7 @@ if($sman->isLogged()) {
 			else {
 				$htmlBody = '<div id="container">
 					<a class="nulled" href="index.php"><h1>NoDZF <span class="tube_back">Tube</span></h1></a>
+					<h1 style="float:right"> <a href="'.$user['link'].'"><img src="'. $user['picture'] .'?sz=30">'. $user['given_name'] .'</a> - '. $user['locale'] .'</h1>
 					<div id="up_form">
 					<form name="edit_form" action="' . $_SERVER['PHP_SELF'] . '?action=edit&id=' . $id . '" method="post">
 					 <h4>Titolo</h4>
@@ -376,6 +389,7 @@ if($sman->isLogged()) {
 				$htmlBody = '
 					<div id="container">
 					<a class="nulled" href="index.php"><h1>NoDZF <span class="tube_back">Tube</span></h1></a>
+					<h1 style="float:right"> <a href="'.$user['link'].'"><img src="'. $user['picture'] .'?sz=30">'. $user['given_name'] .'</a> - '. $user['locale'] .'</h1>
 					<div id="up_form">
 					<form name="delete_form" action="' . $_SERVER['PHP_SELF'] . '?action=delete&id=' . $id . '" method="post">
 					 <input type="hidden" name="submit" value="submit" />
@@ -404,12 +418,18 @@ if($sman->isLogged()) {
 	
 	// We are logged in YouTube API too?
 	if(!isset($req_auth)) {
+		$user = $oauth2->userinfo->get();
+		$user['email'] = filter_var($user['email'], FILTER_SANITIZE_EMAIL);
+		$user['picture'] = filter_var($user['picture'], FILTER_VALIDATE_URL);
+		
 		$htmlBody = '<div id="container">
 			<a class="nulled" href="index.php"><h1>NoDZF <span class="tube_back">Tube</span></h1></a>
+			<h1 style="float:right"> <a href="'.$user['link'].'"><img src="'. $user['picture'] .'?sz=30">'. $user['given_name'] .'</a> - '. $user['locale'] .'</h1>
 			<div class="cnt_cnt">';
 		
 		while($row = mysqli_fetch_array($video)) {
 			$htmlBody .= '<div class="cnt"><h4 class="center">' . $row['title'] . '</h4>
+				<h1 style="float:right"> <a href="'.$user['link'].'"><img src="'. $user['picture'] .'?sz=30">'. $user['given_name'] .'</a> - '. $user['locale'] .'</h1>
 				<img src="../images/yt_icon.gif" />
 				<br />
 				<a href="' . $_SERVER['PHP_SELF'] . '?action=send&id=' . $row['id'] . '">Send</a> | 
