@@ -96,7 +96,7 @@ if($sman->isLogged()) {
   		$_SESSION['state'] = $state;
   		$authUrl = $client->createAuthUrl();
   		$htmlBody = '<div id="container">
-			<a class="nulled" href="index.phpl"><h1>NoDZF <span class="tube_back">Tube</span></h1></a>
+			<a class="nulled" href="index.php"><h1>NoDZF <span class="tube_back">Tube</span></h1></a>
   			<h4 class="center">Authorization Required</h4>
   			<p>You need to <a href="' .$authUrl. '">authorize access to YouTube</a> before proceeding.<p>
   			</div>';
@@ -472,11 +472,13 @@ else if(isset($_POST['username']) && isset($_POST['password'])) {
 	
 	if($username == $auth_username && $password == $auth_password) {
 		$sman->setLogged(true);
+		header('Location: index.php');
 	}
 	else {
 		$sman->setLogged(false);
+		header('Location: index.php?loginerror');
 	}
-	header('Location: index.php?loginerror');
+	
 }
 // The user are not logged, send login form
 else {
