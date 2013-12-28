@@ -14,12 +14,10 @@ try {
 	require_once './google-api-php-client/src/contrib/Google_YouTubeService.php';
 }catch(Exception $e) {
 	// Google PHP API require CURL extension enabled!
+	echo 'Alcuni file non sono presenti o l\' estensione CURL di PHP non è attiva.';
 }
 
 define("UPLOAD_DIR", "../uploads/");
-
-$auth_username = 'username';
-$auth_password = 'password';
 
 // YouTube API keys
 $OAUTH2_CLIENT_ID = 'OAUTH2_CLIENT_ID';
@@ -468,9 +466,9 @@ else if(isset($_POST['username']) && isset($_POST['password'])) {
 	$username = $db->real_escape_string($_POST['username']);
 	$password = $db->real_escape_string($_POST['password']);
 	
-	global $auth_username, $auth_password;
+	$config = new Config;
 	
-	if($username == $auth_username && $password == $auth_password) {
+	if($username == $config->getUsername() && $password == $config->getPassword()) {
 		$sman->setLogged(true);
 		header('Location: index.php');
 	}

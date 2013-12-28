@@ -6,10 +6,15 @@ class Config
 {
 	// Database data
 	
-	public $host = 'localhost';
-	public $username = 'username';
-	public $password = 'password';
-	public $database = 'database';
+	private $host = 'localhost';
+	private $db_username = 'username';
+	private $db_password = 'password';
+	private $database = 'database';
+	
+	// Admin data
+	
+	private $username = 'username';
+	private $password = 'password';
 	
 	//  --------------------------------------------------------------------------------------------------
 	
@@ -33,10 +38,10 @@ class Config
 	
 	// DB username
 	
-	function setDbUsername($username)
+	function setDbUsername($db_username)
 	{
 		try {
-			$this->$username = htmlspecialchars($username);
+			$this->$db_username = htmlspecialchars($db_username);
 		}
 		catch(Exception $e) {
 			return false;
@@ -51,10 +56,10 @@ class Config
 	
 	// DB password
 	
-	function setDbPassword($password)
+	function setDbPassword($db_password)
 	{
 		try {
-			$this->$password = htmlspecialchars($password);
+			$this->$db_password = htmlspecialchars($db_password);
 		}
 		catch(Exception $e) {
 			return false;
@@ -83,6 +88,36 @@ class Config
 	function getDbDatabase()
 	{
 		return htmlspecialchars($this->database);
+	}
+	
+	// ---------------------------------------------------
+	
+	function setUsername($username) {
+		try {
+			$this->username = htmlspecialchars($username);
+		}
+		catch(Exception $e) {
+			return false;
+		}
+		return true;
+	}
+	
+	function getUsername() {
+		return htmlspecialchars($this->username);
+	}
+	
+	function setPassword($password) {
+		try {
+			$this->password = htmlspecialchars($password);
+		}
+		catch(Exception $e) {
+			return false;
+		}
+		return true;
+	}
+	
+	function getPassword() {
+		return htmlspecialchars($this->password);
 	}
 }
 
