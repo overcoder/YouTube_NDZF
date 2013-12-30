@@ -20,19 +20,15 @@ try {
 
 define("UPLOAD_DIR", "../uploads/");
 
-// YouTube API keys
-$OAUTH2_CLIENT_ID = 'OAUTH2_CLIENT_ID';
-$OAUTH2_CLIENT_SECRET = 'OAUTH2_CLIENT_SECRET';
-
 $htmlBody = '';
-$max_storage_days = 3; // -1 to infinite
 
 $db = new Database();
 $sman = new SessionManager();
+$config = new Config;
 
 $client = new Google_Client();
-$client->setClientId($OAUTH2_CLIENT_ID);
-$client->setClientSecret($OAUTH2_CLIENT_SECRET);
+$client->setClientId($config->getOAUTH2_CLIENT_ID());
+$client->setClientSecret($config->getOAUTH2_CLIENT_SECRET());
 $redirect = filter_var('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'],
 	FILTER_SANITIZE_URL);
 $client->setRedirectUri($redirect);
@@ -55,10 +51,10 @@ if($sman === false) {
 }
 
 function old_videos() {
-	global $db, $max_storage_days;
+	global $db, $config;
 	
-	if($max_storage_days != -1) {
-		$result = $db->query("SELECT videos.* FROM videos WHERE DATEDIFF( CURDATE(), videos.date ) >= " . $max_storage_days, false);
+	if($config->getMaxStorageDays() != -1) {
+		$result = $db->query("SELECT videos.* FROM videos WHERE DATEDIFF( CURDATE(), videos.date ) >= " . $config->getMaxStorageDays(), false);
 		if($result) {
 			$old_videos = $db->result_array($result);
 			return $old_videos;
@@ -453,10 +449,10 @@ if($sman->isLogged()) {
 					.'</a>
 				';
 				$interval = date_diff($datenow, $old_date);
-				if($interval->format('%d days') > $max_storage_days && $interval->format('%d days') <= $max_storage_days * 2) {
-					$htmlBody .= '<span class="old_warn">Warning!</span> ' . ($max_storage_days * 2 - $interval->format('%d days') . ' days remaining');
+				if($interval->format('%d days') > $config->getMaxStorageDays() && $interval->format('%d days') <= $config->getMaxStorageDays() * 2) {
+					$htmlBody .= '<span class="old_warn">Warning!</span> ' . ($config->getMaxStorageDays() * 2 - $interval->format('%d days') . ' days remaining');
 				}
-				else if($interval->format('%d days') > $max_storage_days * 2) {
+				else if($interval->format('%d days') > $config->getMaxStorageDays() * 2) {
 					if(file_exists(UPLOAD_DIR . $old_videos[$i]['prefix'] . $old_videos[$i]['name'])) {
 						$deleted = unlink(UPLOAD_DIR . $old_videos[$i]['prefix'] . $old_videos[$i]['name']);
 						
